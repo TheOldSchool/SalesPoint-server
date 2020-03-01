@@ -32,7 +32,18 @@ class DataCenter {
     let result = await this.transact.getOperation(
       this.factory.renderSelectSaleProduct(product)
     );
-    
+
+    return this.renderAcuse(this.buildPreGetAcuse(
+      result.state,
+      result.response
+    ));
+  }
+
+  async getProductsFromCategory(product) {
+    let result = await this.transact.getOperation(
+      this.factory.renderSelectCategoryProduct(product)
+    );
+
     return this.renderAcuse(this.buildPreGetAcuse(
       result.state,
       result.response

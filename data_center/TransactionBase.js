@@ -24,7 +24,7 @@ class TransactionBase {
         resolve();
       });
     });
-    
+
     return stat;
   }
 
@@ -49,7 +49,7 @@ class TransactionBase {
         resolve();
       });
     });
-    
+
     return {state: stat, response: result};
   }
 }

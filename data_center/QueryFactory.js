@@ -4,14 +4,20 @@ class QueryFactory {
     }
 
     renderInsertProduct(product) {
-        let query = "INSERT INTO Menu(key, name, desc, price, ingredients, company) " +
+        let query = "INSERT INTO Menu(key, name, desc, price, ingredients, company, category) " +
             `VALUES('${product.key}','${product.name}', '${product.desc}',
-                    '${product.price}', '${product.ingredients}', '${product.company}')`;
+                    '${product.price}', '${product.ingredients}', '${product.company}',
+                    '${product.category}')`;
         return query;
     }
 
     renderSelectSaleProduct(product) {
         return `SELECT * FROM Menu WHERE company = '${product.company}'`;
+    }
+
+    renderSelectCategoryProduct(product) {
+      return `SELECT * FROM Menu WHERE category = '${product.category}' 
+        and company = '${product.company}'`;
     }
 
     renderRemoveProduct(product) {

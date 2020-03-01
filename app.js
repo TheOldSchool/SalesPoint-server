@@ -20,10 +20,17 @@ app.post('/api/get_all_product', async function(req, res) {
   res.send(response);
 });
 
+app.post('/api/getproducts', async function(req, res) {
+  let product = req.body.product;
+  let response = await center.getProductsFromCategory(product);
+  console.log(response);
+  res.send(response);
+});
+
 app.post('/api/add_product', async function(req, res) {
   let product = req.body.product;
   let response = await center.addProduct(product);
-  
+
   res.send(response);
 });
 
