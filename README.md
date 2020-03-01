@@ -3,10 +3,13 @@
 ## Project setup
 ### Install dependencies
 ```
-npm install express
-npm install sqlite
-npm install cors
+With Yarn
+yarn install
+
+With npm
+npm install
 ```
+
 ### Run server
 ```
 node app.js
