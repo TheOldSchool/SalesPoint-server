@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
+let upload = multer({ dest: 'uploads' });
+
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -44,7 +47,15 @@ app.post('/api/get_user', async function(req, res) {
 app.post('/api/add_user', async function(req, res) {
   let user = req.body.user;
   let response = await center.addUser(user);
-  
+
+  res.send(response);
+});
+
+app.post('/api/gethistorical', async function(req, res) {
+  let user = req.body.user;
+  let response = await center.getHistorical(user);
+  console.log(response);
+
   res.send(response);
 });
 

@@ -1,7 +1,11 @@
 const Product = require('../res/Product.js');
+const Parser = require('../res/Parser.js');
+
 const QueryFactory = require('./QueryFactory.js');
 const TransactionBase = require('./TransactionBase.js');
 const sqlite3 = require('sqlite3').verbose();
+
+let parser = new Parser();
 
 class DataCenter {
   constructor() {
@@ -25,6 +29,7 @@ class DataCenter {
       this.factory.renderInsertProduct(product)
     );
 
+    this.addEvent(parser.parseProduct(product));
     return this.renderAcuse(this.buildPreInsertAcuse(state, []));
   }
 
@@ -78,6 +83,32 @@ class DataCenter {
     return this.renderAcuse(this.buildPreGetAcuse(
       result.state,
       result.response
+    ));
+  }
+
+  /*********************************************************************
+   *                            Historical                             *
+   **********************************************************************/
+
+  async getHistorical(user) {
+    let result = await this.transact.getOperation(
+      this.factory.renderGetHistorical(user)
+    );
+
+    return this.renderAcuse(this.buildPreGetAcuse(
+      result.state,
+      result.response
+    ));
+  }
+
+  async addEvent(event) {
+    const result = await this.transact.insertOperation(
+      this.factory.renderAddEvent(event)
+    );
+
+    return this.renderAcuse(this.buildPreInsertAcuse(
+      result,
+      []
     ));
   }
 
