@@ -10,8 +10,6 @@ class Parser {
   parseProduct(product) {
     let event = new Event(product.company);
 
-    console.log(product);
-
     event.buildEvent(this.parseAction(product.action), product.responsable, 
       this.buildDetails(product), product.action);
     return event;

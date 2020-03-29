@@ -8,49 +8,31 @@ class TransactionBase {
     this.BAD_INJECTION_STATUS = 300;
   }
 
-  async insertOperation(query) {
-    let stat = 0;
-    let bad_db = this.BAD_DB_STATUS;
-    let okay = this.OK_STATUS;
+  async run(query) {
+    let result = [];
 
     let transaction = await new Promise((resolve) => {
       this.database.run(query, function (err) {
-        if (err) {
-          console.error(err.message);
-          stat = bad_db;
-        } else {
-          stat = okay;
-        }
+        if (err) console.error(err.message);
         resolve();
       });
     });
 
-    return stat;
+    return result;
   }
 
-  async getOperation(query) {
-    let stat = 0;
+  async all(query) {
     let result = [];
-    let bad_db = this.BAD_DB_STATUS;
-    let bad_field = this.BAD_FIELD_STATUS;
-    let okay = this.OK_STATUS;
 
     let transaction = await new Promise((resolve) => {
       this.database.all(query, function (err, row) {
-        if (err) {
-          stat = bad_db;
-          console.error(err.message);
-        } else if (row === undefined || row.length == 0) {
-          stat = bad_field;
-        } else {
-          stat = okay;
-          result = row;
-        }
+        if (err) console.error(err.message);
+        if (row != undefined) result = row;
         resolve();
       });
     });
 
-    return {state: stat, response: result};
+    return result;
   }
 }
 
