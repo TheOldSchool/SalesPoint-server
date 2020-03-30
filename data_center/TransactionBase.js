@@ -8,6 +8,7 @@ class TransactionBase {
     this.BAD_INJECTION_STATUS = 300;
   }
 
+  // Si no regresa nada el query se hace run
   async run(query) {
     let result = [];
 
@@ -21,6 +22,7 @@ class TransactionBase {
     return result;
   }
 
+  // Si regresa algo se hace all
   async all(query) {
     let result = [];
 

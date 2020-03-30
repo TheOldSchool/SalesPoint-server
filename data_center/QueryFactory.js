@@ -1,14 +1,17 @@
 class QueryFactory {
     constructor() {
+      // Tipo de acciones
       this.INSERT = 0;
       this.UPDATE = 1;
       this.DELETE = 2;
       this.SELECT = 3;
       this.ESPSELECT = 4;
+      // Actuales funciones a elegir
       this.selectors = {};
     }
 
   getQuery(object, operation) {
+    // Se escogen funciones segun el tipo de objeto
     switch(object.type) {
       case 'product':
         this.products();
@@ -27,10 +30,12 @@ class QueryFactory {
         break;
     }
 
+    // Regresa el query
     return this.picker(object.template, operation);
   }
 
   picker(object, oper) {
+    // Se elige el query
     switch(oper) {
       case this.INSERT: return this.selectors.insert(object);
       case this.UPDATE: return this.selectors.update(object);
@@ -46,6 +51,7 @@ class QueryFactory {
    **********************************************************************/
 
   products(object, operation) {
+    // Se ponen en selectors las funciones de todo tipo dependiendo del tipo de objeto
     this.selectors = {
       insert: this.insertProduct,
       delete: this.removeProduct,

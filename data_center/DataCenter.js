@@ -9,6 +9,7 @@ let parser = new Parser();
 
 class DataCenter {
   constructor() {
+    // Inicia db
     this.database = new sqlite3.Database(__dirname + '/database/salespoint.db',
     error => {
       if(error)
@@ -16,8 +17,11 @@ class DataCenter {
       console.log('Connected to SalesPoint database');
     });
 
+    // Factory crea los queries
     this.factory = new QueryFactory();
+    // Hace la accion en db
     this.transact = new TransactionBase(this.database);
+    // Tipo de acciones
     this.INSERT = 0;
     this.UPDATE = 1;
     this.DELETE = 2;
@@ -25,10 +29,13 @@ class DataCenter {
     this.ESPSELECT = 4;
   }
 
+  // Hace request a la db
   async request(object, operation) {
-    let query = this.factory.getQuery(object, operation);
+    // Se obtiene query
+    const query = this.factory.getQuery(object, operation);
     let result = [];
 
+    // Se elige que hacer
     switch(operation) {
       case this.INSERT:
       case this.UPDATE:
@@ -41,6 +48,7 @@ class DataCenter {
         break;
     }
 
+    // Regresa resultados
     return JSON.stringify(result);
   }
 }

@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
+
+// Guarda imagenes cuando las detecta con el nombre de img
 const storage = multer.diskStorage({
   destination: './uploads',
   filename: function(req, file, cb) {
@@ -9,23 +11,30 @@ const storage = multer.diskStorage({
   }
 });
 
+// Se crea objeto que guarda la img
 const upload = multer({storage: storage});
 const app = express();
 
 const PORT = process.env.PORT || 8000;
-let define_filename = 'ggg';
+// Nombre que se le da a la img al guardar (cambia)
+let define_filename = '';
+// Se tiene el proceso de la sentencia sql
 const DataCenter = require('./data_center/DataCenter.js');
 center = new DataCenter();
 
 app.use(cors());
+// Solo se permite una imagen con la etiqueta img
 app.use(upload.single('img'));
+// Maximo 10 mb de transferencia
 app.use(express.json({ limit: '10mb' }));
+// Se guardan en /uploads/
 app.use(express.static(__dirname + '/uploads/'));
 
 app.get('/', function(req, res) {
   res.send('Welcome to the server salespoint system');
 });
 
+// Proceso general de todo request
 const consult = async function(object, oper) {
   let response = await center.request(object, oper);
   return response;
@@ -36,7 +45,9 @@ const consult = async function(object, oper) {
  **********************************************************************/
 
 app.post('/api/getallproduct', async function(req, res) {
+  // Se obtiene objeto
   const product = req.body.product;
+  // Se manda a consulta con el objeto y el tipo de accion a hacer
   res.send(await consult(product, center.SELECT));
 });
 
@@ -80,6 +91,7 @@ app.post('/api/getallemployees', async function(req, res) {
 });
 
 app.post('/api/addemployee', async function(req, res) {
+  // Los que traen img se parsean y se les cambia el atributo photo
   let employee = JSON.parse(req.body.employee).employee;
   employee.template.photo += define_filename;
   res.send(await consult(employee, center.INSERT));
