@@ -67,6 +67,11 @@ app.post('/api/delproduct', async function(req, res) {
   res.send(await consult(product, center.DELETE));
 });
 
+app.post('/api/Updproduct', async function(req, res) {
+  let product = req.body.product;
+  res.send(await consult(product, center.UPDATE));
+});
+
 /*********************************************************************
  *                        Users Operation                            *
  **********************************************************************/
@@ -79,6 +84,16 @@ app.post('/api/getuser', async function(req, res) {
 app.post('/api/add_user', async function(req, res) {
   let user = req.body.user;
   res.send(await consult(user, center.INSERT));
+});
+
+app.post('/api/upd_user', async function(req, res) {
+  let user = req.body.user;
+  res.send(await consult(user, center.UPDATE));
+});
+
+app.post('/api/del_user', async function(req, res) {
+  let user = req.body.user;
+  res.send(await consult(user, center.DELETE));
 });
 
 /*********************************************************************
@@ -102,6 +117,11 @@ app.post('/api/delemployee', async function(req, res) {
   res.send(await consult(employee, center.DELETE));
 });
 
+app.post('/api/updemployee', async function(req, res) {
+  let employee = req.body.employee;
+  res.send(await consult(employee, center.UPDATE));
+});
+
 /*********************************************************************
  *                        Providers Operation                        *
  **********************************************************************/
@@ -110,6 +130,23 @@ app.post('/api/addprovider', async function(req, res) {
   const provider = JSON.parse(req.body.provider);
   provider.template.photo += define_filename;
   res.send(await consult(provider, center.INSERT));
+});
+
+app.post('/api/updprovider', async function(req, res) {
+  let provider = req.body.provider;
+  res.send(await consult(provider, center.UPDATE));
+});
+
+app.post('/api/delprovider', async function(req, res) {
+  let provider = req.body.provider;
+  res.send(await consult(provider, center.DELETE));
+});
+
+//Proveedores de una empresa
+
+app.post('/api/getprovider', async function(req, res) {
+  let provider = req.body.provider;
+  res.send(await consult(provider, center.SELECT));
 });
 
 /*********************************************************************
