@@ -22,6 +22,12 @@ class QueryFactory {
       case 'user':
         this.users();
         break;
+      case 'inventory':
+        this.inventory();
+        break;
+      case 'ingredient':
+        this.ingredient();
+        break;
       case 'provider':
         this.providers();
         break;
@@ -50,7 +56,7 @@ class QueryFactory {
    *                        Product Operation                          *
    **********************************************************************/
 
-  products(object, operation) {
+  products() {
     // Se ponen en selectors las funciones de todo tipo dependiendo del tipo de objeto
     this.selectors = {
       insert: this.insertProduct,
@@ -92,7 +98,7 @@ class QueryFactory {
    *                        Employee Operation                         *
    **********************************************************************/
 
-  employees(object, operation) {
+  employees() {
     this.selectors = {
       insert: this.insertEmployee,
       update: null,
@@ -125,7 +131,7 @@ class QueryFactory {
    *                          Users Operation                          *
    **********************************************************************/
 
-  users(object, oper) {
+  users() {
     this.selectors = {
       insert: this.insertUser,
       update: null,
@@ -152,10 +158,65 @@ class QueryFactory {
   }
 
   /*********************************************************************
+   *                          Inventory Operation                      *
+   **********************************************************************/
+
+  inventory() {
+    this.selectors = {
+      insert: this.insertInventory,
+      update: this.updateInventory,
+      delete: null,
+      select: this.selectInventory,
+      espselect: this.espSelectInventory
+    };
+  }
+
+  insertInventory(inventory) {
+    return `INSERT INTO Inventory(company, ingredient, amount)
+            VALUES('${inventory.company}', '${inventory.ingredient}',
+            '${inventory.amount}')`;
+  }
+
+  updateInventory(inventory) {
+    return `UPDATE Inventory SET amount = '${inventory.amount}' WHERE ingredient = '${inventory.ingredient}'`;
+  }
+
+  selectInventory(inventory) {
+    return `SELECT * FROM Inventory INNER JOIN
+            Ingredients ON Inventory.ingredient = Ingredients.key
+            WHERE company = '${inventory.company}'`;
+  }
+
+  espSelectInventory(inventory) {
+    return `SELECT * FROM Inventory INNER JOIN
+            Ingredients ON Inventory.ingredient = Ingredients.key
+            WHERE ingredient = '${inventory.ingredient}'`;
+  }
+
+  /*********************************************************************
+   *                          Ingredients Operation                    *
+   **********************************************************************/
+
+  ingredient() {
+    this.selectors = {
+      insert: this.insertIngredient,
+      update: null,
+      delete: null,
+      select: null,
+      espselect: null
+    };
+  }
+
+  insertIngredient(ingredient) {
+    return `INSERT INTO Ingredients(key, name) VALUES('${ingredient.key}',
+            '${ingredient.name}')`;
+  }
+
+  /*********************************************************************
    *                          Providers Operation                      *
    **********************************************************************/
 
-  providers(object, operation) {
+  providers() {
     this.selectors = {
       insert: this.insertProvider,
       update: null,
@@ -177,7 +238,7 @@ class QueryFactory {
    *                        Historical Operation                       *
    **********************************************************************/
 
-  historicals(object, operation) {
+  historicals() {
     this.selectors = {
       insert: this.insertEvent,
       update: null,
