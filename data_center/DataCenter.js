@@ -27,12 +27,13 @@ class DataCenter {
     this.DELETE = 2;
     this.SELECT = 3;
     this.ESPSELECT = 4;
+    this.BACKUP = 5;
   }
 
   // Hace request a la db
   async request(object, operation) {
     // Se obtiene query
-    const query = this.factory.getQuery(object, operation);
+    let query = this.factory.getQuery(object, operation);
     let result = [];
 
     // Se elige que hacer
@@ -44,6 +45,7 @@ class DataCenter {
         break;
       case this.SELECT:
       case this.ESPSELECT:
+      case this.BACKUP:
         result = await this.transact.all(query);
         break;
     }

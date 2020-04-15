@@ -78,9 +78,9 @@ app.post('/api/sale', async function(req, res) {
   res.send(await center.request(history_sale, center.INSERT));
 });
 
-app.post('/api/Updproduct', async function(req, res) {
+app.post('/api/updproduct', async function(req, res) {
   let product = req.body.product;
-  res.send(await consult(product, center.UPDATE));
+  res.send(await center.request(product, center.UPDATE));
 });
 
 /*********************************************************************
@@ -89,22 +89,35 @@ app.post('/api/Updproduct', async function(req, res) {
 
 app.post('/api/getuser', async function(req, res) {
   const user = req.body.user;
-  res.send(await center.request(user, center.SELECT));
+  let login = JSON.parse(await center.request(user, center.SELECT));
+
+  if(login.length == 0) {
+    user.type = 'employee';
+    login = JSON.parse(await center.request(user, center.ESPSELECT));
+  }
+
+  login[0].type = user.type;
+  res.send(JSON.stringify(login));
 });
 
-app.post('/api/add_user', async function(req, res) {
+app.post('/api/adduser', async function(req, res) {
   let user = req.body.user;
-  res.send(await center.request(user, center.INSERT));
+  const exists = JSON.parse(await center.request(user, center.ESPSELECT));
+
+  if(exists.length > 0)
+    res.send(JSON.stringify([[]]));
+  else
+    res.send(await center.request(user, center.INSERT));
 });
 
-app.post('/api/upd_user', async function(req, res) {
+app.post('/api/upduser', async function(req, res) {
   let user = req.body.user;
-  res.send(await consult(user, center.UPDATE));
+  res.send(await center.request(user, center.UPDATE));
 });
 
-app.post('/api/del_user', async function(req, res) {
+app.post('/api/deluser', async function(req, res) {
   let user = req.body.user;
-  res.send(await consult(user, center.DELETE));
+  res.send(await center.request(user, center.DELETE));
 });
 
 /*********************************************************************
@@ -121,6 +134,11 @@ app.post('/api/addemployee', async function(req, res) {
   let employee = JSON.parse(req.body.employee).employee;
   employee.template.photo += define_filename;
   res.send(await center.request(employee, center.INSERT));
+});
+
+app.post('/api/updemployee', async function(req, res) {
+  let employee = (req.body.user) ? req.body.user : req.body.employee;
+  res.send(await center.request(employee, center.UPDATE));
 });
 
 app.post('/api/delemployee', async function(req, res) {
@@ -148,11 +166,16 @@ app.post('/api/getinventory', async function(req, res) {
   res.send(await center.request(inventory, center.SELECT));
 });
 
-app.post('/api/updemployee', async function(req, res) {
-  let employee = req.body.employee;
-  res.send(await consult(employee, center.UPDATE));
+app.post('/api/delinventory', async function(req, res) {
+  const inventory = req.body.inventory;
+  res.send(await center.request(inventory, center.DELETE));
 });
 
+app.post('/api/updinventory', async function(req, res) {
+  let inventory = req.body.inventory;
+  await sale.reinventory(inventory);
+  res.send(JSON.stringify([]));
+});
 /*********************************************************************
  *                        Providers Operation                        *
  **********************************************************************/
@@ -165,19 +188,26 @@ app.post('/api/addprovider', async function(req, res) {
 
 app.post('/api/updprovider', async function(req, res) {
   let provider = req.body.provider;
-  res.send(await consult(provider, center.UPDATE));
+  res.send(await center.request(provider, center.UPDATE));
 });
 
 app.post('/api/delprovider', async function(req, res) {
   let provider = req.body.provider;
-  res.send(await consult(provider, center.DELETE));
+  res.send(await center.request(provider, center.DELETE));
 });
 
-//Proveedores de una empresa
-
-app.post('/api/getprovider', async function(req, res) {
+app.post('/api/getallproviders', async function(req, res) {
   let provider = req.body.provider;
-  res.send(await consult(provider, center.SELECT));
+  res.send(await center.request(provider, center.SELECT));
+});
+
+/*********************************************************************
+ *                        Shopping Operation                         *
+ **********************************************************************/
+
+app.post('/api/addshop', async function(req, res) {
+  const shop = req.body.shop;
+  res.send(await center.request(shop, center.INSERT));
 });
 
 /*********************************************************************
@@ -187,6 +217,55 @@ app.post('/api/getprovider', async function(req, res) {
 app.post('/api/gethistorical', async function(req, res) {
   let user = req.body.user;
   res.send(await center.request(user, center.SELECT));
+});
+
+app.post('/api/getcategoryhistorical', async function(req, res) {
+  let user = req.body.user;
+  res.send(await center.request(user, center.ESPSELECT));
+});
+
+app.post('/api/addhistorical', async function(req, res) {
+  const historical = req.body.historical;
+  res.send(await center.request(historical, center.INSERT));
+});
+
+/*********************************************************************
+ *                        Backups Operation                          *
+ **********************************************************************/
+
+app.post('/api/getbackups', async function(req, res) {
+  const backup = req.body.backup;
+  res.send(await center.request(backup, center.SELECT));
+});
+
+app.post('/api/restorebackup', async function(req, res) {
+  const backup = req.body.backup;
+  res.send(await center.request(backup, center.INSERT));
+});
+
+app.post('/api/backup', async function(req, res) {
+  const backup = req.body.backup;
+  const res_backup = {};
+
+  backup.type = 'product';
+  res_backup.product = JSON.parse(await center.request(backup, center.BACKUP));
+  backup.type = 'employee';
+  res_backup.employee = await JSON.parse(await center.request(backup, center.BACKUP));
+  backup.type = 'user';
+  res_backup.user = await JSON.parse(await center.request(backup, center.BACKUP));
+  backup.type = 'inventory';
+  res_backup.inventory = await JSON.parse(await center.request(backup, center.BACKUP));
+  backup.type = 'provider';
+  res_backup.provider = await JSON.parse(await center.request(backup, center.BACKUP));
+  backup.type = 'shop';
+  res_backup.shop = await JSON.parse(await center.request(backup, center.BACKUP));
+  backup.type = 'historical';
+  res_backup.historical = await JSON.parse(await center.request(backup, center.BACKUP));
+
+  backup.type = 'backup';
+  await center.request(backup, center.ESPSELECT);
+
+  res.send(JSON.stringify(res_backup));
 });
 
 app.listen(PORT, function() {

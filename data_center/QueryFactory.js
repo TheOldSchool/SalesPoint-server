@@ -6,6 +6,7 @@ class QueryFactory {
       this.DELETE = 2;
       this.SELECT = 3;
       this.ESPSELECT = 4;
+      this.BACKUP = 5;
       // Actuales funciones a elegir
       this.selectors = {};
     }
@@ -31,8 +32,14 @@ class QueryFactory {
       case 'provider':
         this.providers();
         break;
+      case 'shop':
+        this.shopping();
+        break;
       case 'historical':
         this.historicals();
+        break;
+      case 'backup':
+        this.backups();
         break;
     }
 
@@ -48,6 +55,7 @@ class QueryFactory {
       case this.DELETE: return this.selectors.delete(object);
       case this.SELECT: return this.selectors.select(object);
       case this.ESPSELECT: return this.selectors.espselect(object);
+      case this.BACKUP: return this.selectors.backup(object);
       default: return '';
     }
   }
@@ -63,19 +71,23 @@ class QueryFactory {
       delete: this.removeProduct,
       update: this.updateProduct,
       select: this.selectProduct,
-      espselect: this.selectCategoryProduct
+      espselect: this.selectCategoryProduct,
+      backup: this.backupProduct
     };
   }
 
   insertProduct(product) {
-    const query = `INSERT INTO Menu(key, name, desc, price, ingredients, company, category, 
-                  photo, active) VALUES('${product.key}','${product.name}', '${product.desc}',
+    const query = `INSERT OR ignore INTO Menu VALUES('${product.key}','${product.name}', '${product.desc}',
                   '${product.price}', '${product.ingredients}', '${product.company}',
                   '${product.category}', '${product.photo}', 1)`;
     return query;
   }
 
   selectProduct(product) {
+    return `SELECT * FROM Menu WHERE company = '${product.company}' and active = 1`;
+  }
+
+  backupProduct(product) {
     return `SELECT * FROM Menu WHERE company = '${product.company}'`;
   }
 
@@ -106,7 +118,8 @@ class QueryFactory {
       update: this.updateEmployee,
       delete: this.removeEmployee,
       select: this.selectEmployees,
-      espselect: null
+      espselect: this.espSelectEmployee,
+      backup: this.backupEmployees
     };
   }
 
@@ -115,8 +128,17 @@ class QueryFactory {
     return query;
   }
 
+  espSelectEmployee(employee) {
+    return `SELECT * FROM Employee WHERE email = '${employee.email}' and password = '${employee.pass}' and active = 1`;
+  }
+
+  backupEmployees(employee) {
+    const query = `SELECT * FROM Employee WHERE company = '${employee.company}'`;
+    return query;
+  }
+
   insertEmployee(employee) {
-    const query = `INSERT INTO Employee(email, name, password, gender, position, cellphone,
+    const query = `INSERT or ignore INTO Employee(email, name, password, gender, position, cellphone,
                   company, photo, active)
                   VALUES('${employee.email}','${employee.name}', '${employee.password}',
                     '${employee.gender}', '${employee.position}', '${employee.cellphone}',
@@ -125,7 +147,7 @@ class QueryFactory {
   }
 
   removeEmployee(employee) {
-    const query = `UPDATE Employee SET active = 0 WHERE key = '${employee.email}'`;
+    const query = `UPDATE Employee SET active = 0 WHERE email = '${employee.email}'`;
     return query;
   }
 
@@ -146,12 +168,13 @@ class QueryFactory {
       update: this.updateUser,
       delete: this.removeUser,
       select: this.selectUser,
-      espselect: null
+      espselect: this.espSelectUser,
+      backup: this.backupUser
     };
   }
 
   insertUser(user) {
-    const query = `INSERT INTO Users(company, username, email, password,
+    const query = `INSERT or ignore INTO Users(company, username, email, password,
                   cellphone, gender, company_turn, rfc, address, colony, postal_code, active) 
                   VALUES('${user.company}', '${user.username}', '${user.email}', 
                   '${user.pass}', '${user.cellphone}', '${user.gender}', 
@@ -161,8 +184,8 @@ class QueryFactory {
   }
 
   updateUser(user) {
-    const query = `UPDATE Users SET company = '${user.company}', username = '${user.username}',  password = '${user.password}', cellphone = '${employee.cellphone}',
-                  gender = '${user.gender}', company_turn = '${user.company_turn}', ref = '${user.rfc}', address = '${user.address}',
+    const query = `UPDATE Users SET username = '${user.username}',  password = '${user.password}', cellphone = '${user.cellphone}',
+                  gender = ${user.gender}, company_turn = '${user.company_turn}', rfc = '${user.rfc}', address = '${user.address}',
                   colony = '${user.colony}', postal_code = '${user.postal_code}'
                   WHERE email = '${user.email}'`;
     return query;
@@ -179,6 +202,16 @@ class QueryFactory {
     return query;
   }
 
+  espSelectUser(user) {
+    const query = `SELECT * FROM Users WHERE email = '${user.email}'`;
+    return query;
+  }
+
+  backupUser(user) {
+    const query = `SELECT * FROM Users WHERE company = '${user.company}'`;
+    return query;
+  }
+
   /*********************************************************************
    *                          Inventory Operation                      *
    **********************************************************************/
@@ -187,34 +220,44 @@ class QueryFactory {
     this.selectors = {
       insert: this.insertInventory,
       update: this.updateInventory,
-      delete: null,
+      delete: this.removeInventory,
       select: this.selectInventory,
-      espselect: this.espSelectInventory
+      espselect: this.espSelectInventory,
+      backup: this.backupInventory
     };
   }
 
   insertInventory(inventory) {
-    return `INSERT INTO Inventory(company, ingredient, amount)
+    return `INSERT or ignore INTO Inventory(company, ingredient, amount, active)
             VALUES('${inventory.company}', '${inventory.ingredient}',
-            '${inventory.amount}')`;
+            '${inventory.amount}', 1)`;
   }
 
   updateInventory(inventory) {
     return `UPDATE Inventory SET amount = '${inventory.amount}' WHERE ingredient = '${inventory.ingredient}'`;
   }
 
+  removeInventory(inventory) {
+    return `UPDATE Inventory SET active = 0 WHERE ingredient = '${inventory.ingredient}'`;
+  }
+
   selectInventory(inventory) {
     return `SELECT * FROM Inventory INNER JOIN
             Ingredients ON Inventory.ingredient = Ingredients.key
-            WHERE company = '${inventory.company}'`;
+            WHERE company = '${inventory.company}' AND active = 1`;
   }
 
   espSelectInventory(inventory) {
     return `SELECT * FROM Inventory INNER JOIN
             Ingredients ON Inventory.ingredient = Ingredients.key
-            WHERE ingredient = '${inventory.ingredient}'`;
+            WHERE ingredient = '${inventory.ingredient}' AND active = 1`;
   }
 
+  backupInventory(inventory) {
+    return `SELECT * FROM Inventory INNER JOIN
+            Ingredients ON Inventory.ingredient = Ingredients.key
+            WHERE company = '${inventory.company}'`;
+  }
   /*********************************************************************
    *                          Ingredients Operation                    *
    **********************************************************************/
@@ -225,12 +268,12 @@ class QueryFactory {
       update: null,
       delete: null,
       select: null,
-      espselect: null
+      espselect: null,
     };
   }
 
   insertIngredient(ingredient) {
-    return `INSERT INTO Ingredients(key, name) VALUES('${ingredient.key}',
+    return `INSERT or ignore INTO Ingredients(key, name) VALUES('${ingredient.key}',
             '${ingredient.name}')`;
   }
 
@@ -244,33 +287,38 @@ class QueryFactory {
       update: this.updateProvider,
       delete: this.removeProvider,
       select: this.selectProvider,
-      espselect: null
+      espselect: null,
+      backup: this.backupProviders
     };
   }
 
   insertProvider(provider) {
-    return `INSERT INTO Providers(id, name, address, tel, rfc, contact, email, 
-            codepostal, credits_day, photo, company) VALUES('${provider.key}', '${provider.name}',
+    return `INSERT or ignore INTO Providers(id, name, address, tel, rfc, contact, email, 
+            codepostal, credits_day, photo, company, active) VALUES('${provider.id}', '${provider.name}',
             '${provider.address}', '${provider.tel}', '${provider.rfc}',
             '${provider.contact}', '${provider.email}', '${provider.codepostal}',
-            '0', '${provider.photo}', '${provider.company}')`;
+            '0', '${provider.photo}', '${provider.company}', 1)`;
   }
 
   updateProvider(provider) {
     const query = `UPDATE Providers SET name = '${provider.name}', address = '${provider.address}',  tel = '${provider.tel}', rfc = '${provider.rfc}',
-                  contact = '${provider.contact}', email = '${provider.email}', codepostal = '${provider.codepostal}', credits_day = '${provider.credits_day}',
-                  company = '${provider.company}'
-                  WHERE id = '${provider.key}'`;
+                  contact = '${provider.contact}', email = '${provider.email}', codepostal = '${provider.codepostal}', credits_day = '${provider.credits_day}'
+                  WHERE id = '${provider.id}'`;
     return query;
   }
 
   removeProvider(provider) {
-    const query = `UPDATE Providers SET active = 0 WHERE email = '${provider.key}'`;
+    const query = `UPDATE Providers SET active = 0 WHERE id = '${provider.id}'`;
     return query;
   }
 
   selectProvider(provider) {
-    const query = `SELECT * FROM provider WHERE company = '${provider.company}' and active = 1`;
+    const query = `SELECT * FROM Providers WHERE company = '${provider.company}' and active = 1`;
+    return query;
+  }
+
+  backupProviders(provider) {
+    const query = `SELECT * FROM Providers WHERE company = '${provider.company}'`;
     return query;
   }
 
@@ -284,22 +332,89 @@ class QueryFactory {
       update: null,
       delete: null,
       select: this.selectHistorical,
-      espselect: null,
+      espselect: this.espSelectHistorical,
+      backup: this.backupHistorical
     };
   }
 
   selectHistorical(user) {
+    const query = `SELECT * FROM Historial WHERE company = '${user.company}'
+                   AND details LIKE '%${user.text}%' ORDER BY time DESC`;
+    return query;
+  }
+
+  espSelectHistorical(user) {
+    const query = `SELECT * FROM Historial WHERE company = '${user.company}' AND
+                   action LIKE '%${user.filter}%' AND details LIKE '%${user.text}%' ORDER BY time DESC`;
+    return query;
+  }
+
+
+  insertEvent(event) {
+    const query = `INSERT or ignore INTO Historial VALUES('${event.key}', '${event.company}',
+                   '${event.action}', '${event.responsable}', '${event.details}',
+                   '${event.states}', datetime('now', 'localtime'))`;
+    return query;
+  }
+
+  backupHistorical(user) {
     const query = `SELECT * FROM Historial WHERE company = '${user.company}'`;
     return query;
   }
+  /*********************************************************************
+   *                        Shopping Operation                         *
+   **********************************************************************/
 
-  insertEvent(event) {
-    const query = `INSERT INTO Historial VALUES('${event.key}', '${event.company}',
-                   '${event.action}', '${event.responsable}', '${event.details}',
-                   '${event.states}', '${event.time}')`;
+  shopping() {
+    this.selectors = {
+      insert: this.insertShop,
+      update: null,
+      delete: null,
+      select: null,
+      espselect: null,
+      backup: this.backupShops
+    };
+  }
+
+  insertShop(shop) {
+    const query = `INSERT or ignore INTO Shops(id, time, provider, state, type, price, iva, total, details, company)
+                   VALUES('${shop.id}', datetime('now', 'localtime'), '${shop.provider}',
+                   '${shop.status}', '${shop.type}', '${shop.price}',
+                   '${shop.iva}', '${shop.total}', '${shop.details}', '${shop.company}')`;
     return query;
   }
 
+  backupShops(shop) {
+    return `SELECT * FROM Shops WHERE company = '${shop.company}'`;
+  }
+
+  /*********************************************************************
+   *                        Backups Operation                          *
+   **********************************************************************/
+
+  backups() {
+    this.selectors = {
+      insert: this.insertBackups,
+      update: null,
+      delete: null,
+      select: this.selectBackups,
+      espselect: this.regLastBackup,
+    };
+  }
+
+  insertBackups(backup) {
+    return `
+    `;
+  }
+
+  regLastBackup(backup) {
+    return `INSERT INTO Backups(key, time, company) VALUES('${backup.key}', 
+            datetime('now', 'localtime'), '${backup.company}')`;
+  }
+
+  selectBackups(backup) {
+    return `SELECT * FROM Backups WHERE company = '${backup.company}' ORDER BY time DESC`;
+  }
 }
 
 module.exports = QueryFactory;

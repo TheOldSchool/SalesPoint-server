@@ -62,6 +62,7 @@ class Sale {
       const ingredient = await this.center.request(ingredients[i], this.center.ESPSELECT);
       const obj_ingredient = JSON.parse(ingredient)[0];
       ingredients[i].template.amount = parseFloat(obj_ingredient.amount) - parseFloat(ingredients[i].template.amount);
+      console.log(ingredients[i]);
       await this.center.request(ingredients[i], this.center.UPDATE);
     }
   }
