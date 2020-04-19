@@ -95,8 +95,6 @@ app.post('/api/getuser', async function(req, res) {
     user.type = 'employee';
     login = JSON.parse(await center.request(user, center.ESPSELECT));
   }
-
-  login[0].type = user.type;
   res.send(JSON.stringify(login));
 });
 
