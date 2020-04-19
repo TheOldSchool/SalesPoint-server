@@ -89,6 +89,7 @@ app.post('/api/updproduct', async function(req, res) {
 
 app.post('/api/getuser', async function(req, res) {
   const user = req.body.user;
+  console.log(user);
   let login = JSON.parse(await center.request(user, center.SELECT));
 
   if(login.length == 0) {
@@ -96,7 +97,6 @@ app.post('/api/getuser', async function(req, res) {
     login = JSON.parse(await center.request(user, center.ESPSELECT));
   }
 
-  login[0].type = user.type;
   res.send(JSON.stringify(login));
 });
 
@@ -207,6 +207,8 @@ app.post('/api/getallproviders', async function(req, res) {
 
 app.post('/api/addshop', async function(req, res) {
   const shop = req.body.shop;
+  const inventory = sale.serialize(req.body.ingredients);
+  await sale.reinventory(inventory);
   res.send(await center.request(shop, center.INSERT));
 });
 
