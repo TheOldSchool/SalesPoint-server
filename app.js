@@ -96,7 +96,10 @@ app.post('/api/getuser', async function(req, res) {
     user.type = 'employee';
     login = JSON.parse(await center.request(user, center.ESPSELECT));
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 31c081e7d9dba03132ee79a451436ceade29eec7
   res.send(JSON.stringify(login));
 });
 
