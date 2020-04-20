@@ -23,20 +23,20 @@ Registro:
             pero al momento de corregirlo el mensaje sigue apareciendo aunque la casilla ya este bien escrita
     - Desactivar caracteres que no sean letras, numeros, puntos o arroba.
 Proveedores:
-    - cambiar de lugar rfc y persona fisica o moral, para que al momento de verificar el rfc ya se haya seleccionado bien el tipo de persona
-    - una vez ingresado el proveedor cambiar la etiqueta de "guardar" en vez de "agregar "
-    - Alinear el boton de agregar con el boton de eliminar del otro proveedor
+    [x] Cambiar de lugar rfc y persona fisica o moral, para que al momento de verificar el rfc ya se haya seleccionado bien el tipo de persona
+    [x] una vez ingresado el proveedor cambiar la etiqueta de "guardar" en vez de "agregar "
+    [x] Alinear el boton de agregar con el boton de eliminar del otro proveedor
     - Desactivar caracteres que no sean letras, numeros, puntos o arroba.
 Ingredientes:
-    - Agregar lo que platicamos.
-    - no dejar cantidades negativas.
+    [x] Agregar lo que platicamos.
+    [x] no dejar cantidades negativas.
 Productos:
     - Desactivar caracteres que no sean letras, numeros, puntos o arroba.
-    - La cantidad no acepta decimales.
-    - la cantidad de un ingrediente de al menos 1
-    - eliminar negativos
-    - solo se agrega un ingrediente, si agrego varios solo se queda el primero y si lo modifico, se elimina y ya no puedo poner ingredientes
-    - al seleccionar un producto que cambie la etiqueta de agregar a guardar
+    [x] La cantidad no acepta decimales.
+    [x] la cantidad de un ingrediente de al menos 1
+    [x] eliminar negativos
+    [x] solo se agrega un ingrediente, si agrego varios solo se queda el primero y si lo modifico, se elimina y ya no puedo poner ingredientes
+    [x] al seleccionar un producto que cambie la etiqueta de agregar a guardar
 ```
 
 

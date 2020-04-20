@@ -228,9 +228,9 @@ class QueryFactory {
   }
 
   insertInventory(inventory) {
-    return `INSERT or ignore INTO Inventory(company, ingredient, amount, active)
+    return `INSERT or ignore INTO Inventory(company, ingredient, amount, units, active)
             VALUES('${inventory.company}', '${inventory.ingredient}',
-            '${inventory.amount}', 1)`;
+            '${inventory.amount}', '${inventory.unit}', 1)`;
   }
 
   updateInventory(inventory) {
