@@ -89,7 +89,6 @@ app.post('/api/updproduct', async function(req, res) {
 
 app.post('/api/getuser', async function(req, res) {
   const user = req.body.user;
-  console.log(user);
   let login = JSON.parse(await center.request(user, center.SELECT));
 
   if(login.length == 0) {

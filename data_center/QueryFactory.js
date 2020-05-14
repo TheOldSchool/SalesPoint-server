@@ -338,14 +338,32 @@ class QueryFactory {
   }
 
   selectHistorical(user) {
-    const query = `SELECT * FROM Historial WHERE company = '${user.company}'
-                   AND details LIKE '%${user.text}%' ORDER BY time DESC`;
+    let query = '';
+    if(user.start != '' && user.end != '') {
+      query = `SELECT * FROM Historial
+               WHERE time BETWEEN '${user.start}' AND '${user.end}'
+               AND details LIKE '%${user.text}%' AND company = '${user.company}'
+               ORDER BY time DESC`;
+    } else {
+      query = `SELECT * FROM Historial
+               WHERE details LIKE '%${user.text}%' AND company = '${user.company}'
+               ORDER BY time DESC`;
+    }
     return query;
   }
 
   espSelectHistorical(user) {
-    const query = `SELECT * FROM Historial WHERE company = '${user.company}' AND
-                   action LIKE '%${user.filter}%' AND details LIKE '%${user.text}%' ORDER BY time DESC`;
+    let query = '';
+
+    if(user.start != '' && user.end != '') {
+      query = `SELECT * FROM Historial WHERE time BETWEEN '${user.start}' AND '${user.end}'
+               AND company = '${user.company}' AND
+               action LIKE '%${user.filter}%' AND details LIKE '%${user.text}%' ORDER BY time DESC`;
+    } else {
+      query = `SELECT * FROM Historial WHERE company = '${user.company}' AND
+               action LIKE '%${user.filter}%' AND details LIKE '%${user.text}%' ORDER BY time DESC`;
+    }
+
     return query;
   }
 
