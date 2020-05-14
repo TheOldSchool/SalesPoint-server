@@ -60,6 +60,7 @@ app.post('/api/addproduct', async function(req, res) {
 
 app.post('/api/delproduct', async function(req, res) {
   let product = req.body.product;
+  console.log(product);
   res.send(await center.request(product, center.DELETE));
 });
 

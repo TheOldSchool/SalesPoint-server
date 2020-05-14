@@ -84,7 +84,7 @@ class QueryFactory {
   }
 
   selectProduct(product) {
-    return `SELECT * FROM Menu WHERE company = '${product.company}'`;
+    return `SELECT * FROM Menu WHERE company = '${product.company}' AND active = 1`;
   }
 
   backupProduct(product) {
@@ -93,7 +93,7 @@ class QueryFactory {
 
   selectCategoryProduct(product) {
     return `SELECT * FROM Menu WHERE category = '${product.category}' 
-            and company = '${product.company}'`;
+            and company = '${product.company}' AND active = 1`;
   }
 
   removeProduct(product) {
@@ -124,12 +124,12 @@ class QueryFactory {
   }
 
   selectEmployees(employee) {
-    const query = `SELECT * FROM Employee WHERE company = '${employee.company}'`;
+    const query = `SELECT * FROM Employee WHERE company = '${employee.company}' AND active = 1`;
     return query;
   }
 
   espSelectEmployee(employee) {
-    return `SELECT * FROM Employee WHERE email = '${employee.email}' and password = '${employee.pass}'`;
+    return `SELECT * FROM Employee WHERE email = '${employee.email}' and password = '${employee.pass}' AND active = 1`;
   }
 
   backupEmployees(employee) {
@@ -198,12 +198,12 @@ class QueryFactory {
 
   selectUser(user) {
     const query = `SELECT * FROM Users WHERE email = '${user.email}' AND 
-                  password = '${user.pass}'`;
+                  password = '${user.pass}' AND active = 1`;
     return query;
   }
 
   espSelectUser(user) {
-    const query = `SELECT * FROM Users WHERE email = '${user.email}'`;
+    const query = `SELECT * FROM Users WHERE email = '${user.email}' AND active = 1`;
     return query;
   }
 
@@ -244,13 +244,13 @@ class QueryFactory {
   selectInventory(inventory) {
     return `SELECT * FROM Inventory INNER JOIN
             Ingredients ON Inventory.ingredient = Ingredients.key
-            WHERE company = '${inventory.company}'`;
+            WHERE company = '${inventory.company}' AND active = 1`;
   }
 
   espSelectInventory(inventory) {
     return `SELECT * FROM Inventory INNER JOIN
             Ingredients ON Inventory.ingredient = Ingredients.key
-            WHERE ingredient = '${inventory.ingredient}'`;
+            WHERE ingredient = '${inventory.ingredient}' AND active = 1`;
   }
 
   backupInventory(inventory) {
@@ -313,7 +313,7 @@ class QueryFactory {
   }
 
   selectProvider(provider) {
-    const query = `SELECT * FROM Providers WHERE company = '${provider.company}'`;
+    const query = `SELECT * FROM Providers WHERE company = '${provider.company}' AND active = 1`;
     return query;
   }
 
